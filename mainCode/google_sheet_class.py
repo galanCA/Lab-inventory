@@ -1,16 +1,8 @@
 from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
-import os, glob, sys
 
-# Add other folder to running path
-#running_path = os.path.dirname(os.path.abspath(__file__))
-#temp = running_path.split("\\")
-#for i in xrange(1,3):
-#	temp.pop(len(temp)-1)
-#outsidepath = "\\".join(temp)
-#sys.path.append(outsidepath)
-
+# Other files
 from sheets_id import *
 
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets' #.readonly
@@ -18,7 +10,7 @@ SCOPES = 'https://www.googleapis.com/auth/spreadsheets' #.readonly
 class Gsheet():
 	def __init__(self, ID):
 		self.SHEET_ID = ID 
-		store = file.Storage('token.json')
+		store = file.Storage(TOKEN)
 		creds = store.get()
 		if not creds or creds.invalid:
 			flow = client.flow_from_clientsecrets(JSON_CLIENT, SCOPES)
@@ -32,7 +24,6 @@ class Gsheet():
 
 		values = result.get('values', [])
 		return values
-
 
 def main():
 	mainsheet = Gsheet(MAINSPREADSHEET_ID)
