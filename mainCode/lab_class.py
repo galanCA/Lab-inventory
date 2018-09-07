@@ -17,6 +17,7 @@ class Inventorysheet():
 
 		# create instance of each sheet
 		self.resistors = Resistors(self.sheet)
+		self.bits = Bits(self.sheet)
 
 
 class AbstractSheet(object):
@@ -47,7 +48,7 @@ class AbstractSheet(object):
 			if item in row[0]:
 				return row[i]
 
-	def __count(self, item):
+	def __count_modifier(self, item):
 		pass
 
 
@@ -60,7 +61,13 @@ class Resistors(AbstractSheet):
 		self.item_ranges = self.sheet_name + "A3:A"
 		self.total_ranges = self.sheet_name + "A2:C"
 
+class Bits(AbstractSheet):
+	def __init__(self, sheet=None):
+		super(Bits, self).__init__(sheet)
 
+		self.sheet_name = "Bits!"
+		self.item_ranges = self.sheet_name + "A3:A"
+		self.total_ranges = self.sheet_name + "A2:C"
 		
 def main():
 	invt = Inventorysheet(MAINSPREADSHEET_ID)
