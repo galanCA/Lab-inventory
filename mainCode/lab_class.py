@@ -17,7 +17,12 @@ class Inventorysheet():
 		# create instance of each sheet
 		self.resistors = Resistors(self.sheet)
 		self.bits = Bits(self.sheet)
-
+		self.electronics = Electronics(self.sheet)
+		self.mechanical = Mechanical(self.sheet)
+		self.sensor = Sensor(self.sheet)
+		self.capacitors = Capacitors(self.sheet)
+		self.tools = Tools(self.sheet)
+		self.other = Other(self.sheet)
 
 class AbstractSheet(object):
 	def __init__(self, sheet):
@@ -28,7 +33,7 @@ class AbstractSheet(object):
 	def append_item(self, item):
 		'''
 		'''
-		return self.sheet.append(self.sheet_name+"A1:A")
+		return self.sheet.append(self.sheet_name+"A1:A",item)
 
 	def add_to_count(self, item, value=None):
 		'''
@@ -81,10 +86,12 @@ class AbstractSheet(object):
 			# create the item
 			msg = self.append_item(item)
 			current_count = 0
-			cell = msg['updates']['updatedRange']
-			print cell
-			#cell = cell[len(cell)-2] 
-			print cell[len(cell)-1]
+			cell_temp = msg['updates']['updatedRange']
+			temp = cell_temp.split("!")
+			dummy = self.__int2abc(self.__abc2int(temp[1][0])+1) + temp[1][1]
+			cell = "!".join([temp[0], dummy])
+
+			
 
 		if not current_count:
 			current_count = 0
@@ -101,7 +108,12 @@ class AbstractSheet(object):
 		if value >= 0 and value <= 25:
 			return chr(65+value)
 
-########### Sheet classes #############
+	def __abc2int(self, string):
+		'''
+		'''
+		return ord(string)-65
+
+########################## Sheet classes #############
 class Resistors(AbstractSheet):
 	def __init__(self, sheet=None):
 		#self.sheet = sheet
@@ -116,6 +128,54 @@ class Bits(AbstractSheet):
 		super(Bits, self).__init__(sheet)
 
 		self.sheet_name = "Bits!"
+		self.item_ranges = self.sheet_name + "A3:A"
+		self.total_ranges = self.sheet_name + "A2:C"
+
+class Electronics(AbstractSheet):
+	def __init__(self, sheet=None):
+		super(Electronics, self).__init__(sheet)
+
+		self.sheet_name = "Electronics!"
+		self.item_ranges = self.sheet_name + "A3:A"
+		self.total_ranges = self.sheet_name + "A2:C"
+
+class Mechanical(AbstractSheet):
+	def __init__(self, sheet=None):
+		super(Mechanical, self).__init__(sheet)
+
+		self.sheet_name = "Mechanical!"
+		self.item_ranges = self.sheet_name + "A3:A"
+		self.total_ranges = self.sheet_name + "A2:C"
+
+class Sensor(AbstractSheet):
+	def __init__(self, sheet=None):
+		super(Sensor, self).__init__(sheet)
+
+		self.sheet_name = "Sensor!"
+		self.item_ranges = self.sheet_name + "A3:A"
+		self.total_ranges = self.sheet_name + "A2:C"
+
+class Capacitors(AbstractSheet):
+	def __init__(self, sheet=None):
+		super(Capacitors, self).__init__(sheet)
+
+		self.sheet_name = "Capacitors!"
+		self.item_ranges = self.sheet_name + "A3:A"
+		self.total_ranges = self.sheet_name + "A2:C"
+
+class Tools(AbstractSheet):
+	def __init__(self, sheet=None):
+		super(Tools, self).__init__(sheet)
+
+		self.sheet_name = "Tools!"
+		self.item_ranges = self.sheet_name + "A3:A"
+		self.total_ranges = self.sheet_name + "A2:C"
+
+class Other(AbstractSheet):
+	def __init__(self, sheet=None):
+		super(Other, self).__init__(sheet)
+
+		self.sheet_name = "Other!"
 		self.item_ranges = self.sheet_name + "A3:A"
 		self.total_ranges = self.sheet_name + "A2:C"
 
@@ -190,7 +250,7 @@ def main():
 	invt = Inventorysheet(MAINSPREADSHEET_ID)
 	#print invt.resistors.show_items()
 	#print invt.resistors.item_count("1")
-	invt.bits.add_to_count("1/18", 1)
+	invt.bits.add_to_count("5/16", 1)
 
 if __name__ == '__main__':
 	main()
