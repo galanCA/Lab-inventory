@@ -41,10 +41,23 @@ class Gsheet():
 			body=body
 			).execute()
 
+	def append(self, range_name=None, item=''):
+		body = {
+			"values":[
+			[item]
+			]
+		}
+		return self.service.spreadsheets().values().append(
+			spreadsheetId=self.SHEET_ID,
+			range=range_name,
+			valueInputOption="RAW",
+			body=body
+			).execute()
+
 def main():
 	mainsheet = Gsheet(MAINSPREADSHEET_ID)
-	print mainsheet.get_values(range_name="Resistors!A1:C999")
-	mainsheet.mod_cell(range_name="Bits!A2", value='It works') 
-
+	#mainsheet.mod_cell(range_name="Bits!A2", value='It works')
+	mainsheet.append(range_name="Bits!A1:A",item="1/8")
+	print mainsheet.get_values(range_name="Bits!A1:A")
 if __name__ == '__main__':
 	main()
