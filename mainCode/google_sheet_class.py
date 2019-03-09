@@ -3,9 +3,11 @@ from httplib2 import Http
 from oauth2client import file, client, tools
 
 # Other files
-from sheets_id import *
+#from sheets_id import * # Don't know what this does
 
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets' #.readonly
+TOKEN = './TOKEN'
+JSON_CLIENT = './../../credentials.json'
 
 class Gsheet():
 	def __init__(self, ID):
