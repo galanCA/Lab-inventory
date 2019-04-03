@@ -1,5 +1,9 @@
 from google_sheet_class import Gsheet
-from sheets_id import *
+import pandas as pd
+import numpy as np
+
+
+#from sheets_id import *
 '''
 every sheet needs to:
 add/substract a count from an item
@@ -30,10 +34,66 @@ class AbstractSheet(object):
 		'''
 		self.sheet = sheet
 
+	def item_checkout(self, sn_id, person):
+		'''
+		'''
+		SN_column = "Part Number"
+		raw = self.sheet.get_values(range_name=self.total_ranges)
+		data = pd.DataFrame(data=raw[1:],
+							columns=raw[0])
+		#print data["Part Number"]
+		for i, sn in enumerate(data[SN_column]):
+			try:
+				if sn_id in sn:
+					break
+			except TypeError:
+				continue
+
+		#print "Hey", data[SN_column][i], sn_id
+		for j, C in enumerate(data.columns):
+			if "Check" in C:
+				break
+
+		start_cell = self.total_ranges.split("!")[1].split(":")[0]
+		checkout_cell =  self.__addletters(start_cell[0],j)+str(int(start_cell[1])+i+1)
+		#print checkout_cell
+		self.sheet.mod_cell(range_name=self.sheet_name+checkout_cell, value=person)
+
+		return [self.sheet_name+checkout_cell, person]
+
+	def item_checkin(self, sn_id):
+		'''
+		'''
+		SN_column = "Part Number"
+		checkin_name = "In storage"
+		raw = self.sheet.get_values(range_name=self.total_ranges)
+		data = pd.DataFrame(data=raw[1:],
+							columns=raw[0])
+
+		for i, sn in enumerate(data[SN_column]):
+			try:
+				if sn_id in sn:
+					break
+			except TypeError:
+				continue
+
+
+		for j, C in enumerate(data.columns):
+			if "Check" in C:
+				break
+
+		start_cell = self.total_ranges.split("!")[1].split(":")[0]
+		checkin_cell =  self.__addletters(start_cell[0],j)+str(int(start_cell[1])+i+1)
+		#print checkin_cell
+		self.sheet.mod_cell(range_name=self.sheet_name+checkin_cell, value=checkin_name)
+
+		return [self.sheet_name+checkin_cell, checkin_name]
+
+
 	def append_item(self, item):
 		'''
 		'''
-		return self.sheet.append(self.sheet_name+"A1:A",item)
+		return self.sheet.append(self.sheet_name+"A1:A", item)
 
 	def add_to_count(self, item, value=None):
 		'''
@@ -113,6 +173,9 @@ class AbstractSheet(object):
 		'''
 		return ord(string)-65
 
+	def __addletters(self, c,x):
+		return chr(ord(c)+x)
+
 ########################## Sheet classes #############
 class Resistors(AbstractSheet):
 	def __init__(self, sheet=None):
@@ -151,9 +214,9 @@ class Sensor(AbstractSheet):
 	def __init__(self, sheet=None):
 		super(Sensor, self).__init__(sheet)
 
-		self.sheet_name = "Sensor!"
-		self.item_ranges = self.sheet_name + "A3:A"
-		self.total_ranges = self.sheet_name + "A2:C"
+		self.sheet_name = "Sensors!"
+		self.item_ranges = self.sheet_name + "C3:C"
+		self.total_ranges = self.sheet_name + "A2:E"
 
 class Capacitors(AbstractSheet):
 	def __init__(self, sheet=None):
