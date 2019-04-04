@@ -174,6 +174,8 @@ class AbstractSheet(object):
 		return ord(string)-65
 
 	def __addletters(self, c,x):
+		'''
+		'''
 		return chr(ord(c)+x)
 
 ########################## Sheet classes #############
