@@ -23,6 +23,8 @@ RESPONSESSPREADSHEET_ID = '1VqtD8A9ouW31R_Bpwvt4pyhXv2HpsUMRM2fl5xjnSRs'
 delay_time = 5 # minutes
 
 def main():
+	# infinite loop
+
 	# Open Access to Inventory
 	ig = Inventorysheet(MAINSPREADSHEET_ID)
 
@@ -33,30 +35,32 @@ def main():
 	temp = lab_stock.get_values(range_name="Form responses 1!A1:D")
 	
 	# Get the last x minutes 
+	values = False
 	right_now = datetime.datetime.today()
 	for idx, row in enumerate(temp[1:]):
 		if datetime.datetime.strptime(row[0],"%m/%d/%Y %H:%M:%S") > right_now - datetime.timedelta(minutes=delay_time):
 			check_hist = pd.DataFrame(data=temp[idx+1:],
 										columns=temp[0])
+			values = True
+
 			break
 
 	# Check if there has being a
-
-
-
-	# Check if it is check out or check in and update the sheet
-	#ig.sensor.item_checkout(IMU_id, 'Cesar')
-	#ig.sensor.item_checkin(IMU_id)
-	for row in check_hist.values:
-		timestamp, status, SN, Name = row
-		if "In" in status:
-			print status, SN, Name
-			ig.sensor.item_checkin(SN)
-		elif "Out" in status:
-			print status, SN, Name
-			ig.sensor.item_checkout(SN, Name)
+	if values: 
+		# Check if it is check out or check in and update the sheet
+		#ig.sensor.item_checkout(IMU_id, 'Cesar')
+		#ig.sensor.item_checkin(IMU_id)
+		for row in check_hist.values:
+			timestamp, status, SN, Name = row
+			if "In" in status:
+				print status, SN, Name
+				ig.sensor.item_checkin(SN)
+			elif "Out" in status:
+				print status, SN, Name
+				ig.sensor.item_checkout(SN, Name)
 	
 
+	# wait for 5 minutes to pass
 	# repeat
 
 
