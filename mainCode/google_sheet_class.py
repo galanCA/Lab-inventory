@@ -60,6 +60,6 @@ def main():
 	mainsheet = Gsheet(MAINSPREADSHEET_ID)
 	#mainsheet.mod_cell(range_name="Bits!A2", value='It works')
 	mainsheet.append(range_name="Bits!A1:A",item="1/8")
-	print mainsheet.get_values(range_name="Bits!A1:A")
+	print (mainsheet.get_values(range_name="Bits!A1:A"))
 if __name__ == '__main__':
 	main()

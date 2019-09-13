@@ -10,6 +10,7 @@ from google_sheet_class import Gsheet
 from lab_class import Inventorysheet#, MAINSPREADSHEET_ID
 import pandas as pd
 import datetime
+import time
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets' #.readonly
@@ -20,46 +21,47 @@ MAINSPREADSHEET_ID = '1pSunRFAVAG7vR3N1zd6jIbJcco_tn_KDaE7jA8uIUjI'
 RESPONSESSPREADSHEET_ID = '1VqtD8A9ouW31R_Bpwvt4pyhXv2HpsUMRM2fl5xjnSRs'
 
 # waiting time
-delay_time = 5 # minutes
+delay_time = 10 # minutes
 
 def main():
 	# infinite loop
+	while True:
+		# Open Access to Inventory
+		ig = Inventorysheet(MAINSPREADSHEET_ID)
 
-	# Open Access to Inventory
-	ig = Inventorysheet(MAINSPREADSHEET_ID)
+		# Open Access to Response sheet
+		lab_stock = Gsheet(RESPONSESSPREADSHEET_ID)
 
-	# Open Access to Response sheet
-	lab_stock = Gsheet(RESPONSESSPREADSHEET_ID)
+		# Read response sheet
+		temp = lab_stock.get_values(range_name="Form responses 1!A1:E")
 
-	# Read response sheet
-	temp = lab_stock.get_values(range_name="Form responses 1!A1:D")
-	
-	# Get the last x minutes 
-	values = False
-	right_now = datetime.datetime.today()
-	for idx, row in enumerate(temp[1:]):
-		if datetime.datetime.strptime(row[0],"%m/%d/%Y %H:%M:%S") > right_now - datetime.timedelta(minutes=delay_time):
-			check_hist = pd.DataFrame(data=temp[idx+1:],
-										columns=temp[0])
-			values = True
+		# Get the last x minutes 
+		values = False
+		right_now = datetime.datetime.today()
 
-			break
+		for idx, row in enumerate(temp[1:]):
+			if datetime.datetime.strptime(row[0],"%m/%d/%Y %H:%M:%S") > right_now - datetime.timedelta(minutes=delay_time):
+				check_hist = pd.DataFrame(data=temp[idx+1:],
+											columns=temp[0])
+				values = True
 
-	# Check if there has being a
-	if values: 
-		# Check if it is check out or check in and update the sheet
-		#ig.sensor.item_checkout(IMU_id, 'Cesar')
-		#ig.sensor.item_checkin(IMU_id)
-		for row in check_hist.values:
-			timestamp, status, SN, Name = row
-			if "In" in status:
-				print status, SN, Name
-				ig.sensor.item_checkin(SN)
-			elif "Out" in status:
-				print status, SN, Name
-				ig.sensor.item_checkout(SN, Name)
-	
+				break
 
+		# Check if there has being a
+		if values: 
+			# Check if it is check out or check in and update the sheet
+			#ig.sensor.item_checkout(IMU_id, 'Cesar')
+			#ig.sensor.item_checkin(IMU_id)
+			for row in check_hist.values:
+				timestamp, status, SN, Name, itemType = row
+				if "In" in status:
+					print(status, SN, Name,itemType)
+					ig.sensor.item_checkin(SN)
+				elif "Out" in status:
+					print( status, SN, Name, itemType)
+					ig.sensor.item_checkout(SN, Name)
+		
+		time.sleep(delay_time)
 	# wait for 5 minutes to pass
 	# repeat
 
